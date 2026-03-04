@@ -50,3 +50,107 @@ PORTUGUÊS
 - Não deve ser possível cadastrar o e-mail já cadastrado
 - Deve ser possível remover usuário
 - Deve ser possível alterar os dados do usuário
+
+---
+
+## Como utilizar / Cómo utilizar
+
+### Pré-requisitos / Prerrequisitos
+
+- [Node.js](https://nodejs.org/) v20+
+- npm ou yarn
+
+### Instalação / Instalación
+
+```bash
+npm install
+```
+
+### Variáveis de Ambiente / Variables de Entorno
+
+Crie um arquivo `.env` na raiz do projeto / Cree un archivo `.env` en la raíz del proyecto:
+
+```env
+PORT=3000
+JWT_SECRET=sps-jwt-secret-change-in-production
+JWT_REFRESH_SECRET=sps-refresh-secret-change-in-production
+JWT_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
+```
+
+### Executar em desenvolvimento / Ejecutar en desarrollo
+
+```bash
+npm run dev
+```
+
+O servidor iniciará na porta configurada (padrão: `3000`) com hot-reload via Nodemon.
+El servidor se iniciará en el puerto configurado (por defecto: `3000`) con hot-reload vía Nodemon.
+
+### Build para produção / Build para producción
+
+```bash
+npm run build
+npm start
+```
+
+### Documentação da API / Documentación de la API
+
+Após iniciar o servidor, acesse o Swagger em:
+Después de iniciar el servidor, acceda al Swagger en:
+
+```
+http://localhost:3000/api-docs
+```
+
+### Usuário admin padrão / Usuario admin por defecto
+
+```json
+{
+  "email": "admin@spsgroup.com.br",
+  "password": "1234"
+}
+```
+
+---
+
+## Docker
+
+### Build e execução individual / Build y ejecución individual
+
+```bash
+docker build -t test-sps-server .
+docker run -p 3000:3000 test-sps-server
+```
+
+### Com docker-compose (apenas server) / Con docker-compose (solo server)
+
+```bash
+docker compose up --build
+```
+
+### Com docker-compose (server + react)
+
+Para executar ambos os projetos juntos, utilize o `docker-compose.yml` no diretório pai.
+Para ejecutar ambos proyectos juntos, utilice el `docker-compose.yml` en el directorio padre.
+
+A estrutura esperada é / La estructura esperada es:
+
+```
+sps/
+├── docker-compose.yml
+├── test-sps-server/
+└── test-sps-react/
+```
+
+Na pasta `sps/`, execute / En la carpeta `sps/`, ejecute:
+
+```bash
+docker compose up --build
+```
+
+| Serviço / Servicio | URL                     |
+| ------------------- | ----------------------- |
+| API (Server)        | http://localhost:3000    |
+| Swagger             | http://localhost:3000/api-docs |
+| Frontend (React)    | http://localhost:3001    |
