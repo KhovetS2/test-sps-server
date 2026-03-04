@@ -129,28 +129,61 @@ docker run -p 3000:3000 test-sps-server
 docker compose up --build
 ```
 
-### Com docker-compose (server + react)
+### Com docker-compose (server + react) / Con docker-compose (server + react)
 
-Para executar ambos os projetos juntos, utilize o `docker-compose.yml` no diretório pai.
-Para ejecutar ambos proyectos juntos, utilice el `docker-compose.yml` en el directorio padre.
+Para executar ambos os projetos juntos, clone os dois repositórios e crie um `docker-compose.yml` no diretório pai.
+Para ejecutar ambos proyectos juntos, clone ambos repositorios y cree un `docker-compose.yml` en el directorio padre.
 
 A estrutura esperada é / La estructura esperada es:
 
 ```
 sps/
-├── docker-compose.yml
+├── docker-compose.yml    ← criar este arquivo / crear este archivo
 ├── test-sps-server/
 └── test-sps-react/
 ```
 
-Na pasta `sps/`, execute / En la carpeta `sps/`, ejecute:
+Crie o arquivo `docker-compose.yml` com o seguinte conteúdo / Cree el archivo `docker-compose.yml` con el siguiente contenido:
+
+```yaml
+services:
+  api:
+    build: ./test-sps-server
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - JWT_SECRET=sps-jwt-secret-change-in-production
+      - JWT_REFRESH_SECRET=sps-refresh-secret-change-in-production
+      - JWT_EXPIRES_IN=15m
+      - JWT_REFRESH_EXPIRES_IN=7d
+    volumes:
+      - sqlite-data:/app/data
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./test-sps-react
+      args:
+        - REACT_APP_SERVER_URL=http://localhost:3000
+    ports:
+      - "3001:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  sqlite-data:
+```
+
+Em seguida, execute / Luego ejecute:
 
 ```bash
 docker compose up --build
 ```
 
-| Serviço / Servicio | URL                     |
-| ------------------- | ----------------------- |
-| API (Server)        | http://localhost:3000    |
+| Serviço / Servicio | URL                          |
+| ------------------- | ---------------------------- |
+| API (Server)        | http://localhost:3000         |
 | Swagger             | http://localhost:3000/api-docs |
-| Frontend (React)    | http://localhost:3001    |
+| Frontend (React)    | http://localhost:3001         |
