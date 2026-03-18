@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { getUserByEmail } from "../services/user.service";
+import { getUserByEmail, getUserProfileImageDataUri } from "../services/user.service";
 import {
     generateAccessToken,
     generateRefreshToken,
@@ -69,6 +69,8 @@ export function login(req: Request, res: Response): void {
     const access_token = generateAccessToken(user);
     const refresh_token = generateRefreshToken(user);
 
+    const profileImage = getUserProfileImageDataUri(user.id);
+
     res.json({
         access_token,
         refresh_token,
@@ -78,10 +80,14 @@ export function login(req: Request, res: Response): void {
             name: user.name,
             email: user.email,
             type: user.type,
+            has_profile_image: !!user.profile_image_data,
+            profile_image_url: user.profile_image_data
+                ? `/users/${user.id}/profile-image`
+                : null,
+            profile_image: profileImage, // data URI para usar direto no frontend
         },
     });
 }
-
 /**
  * @swagger
  * /auth/refresh:

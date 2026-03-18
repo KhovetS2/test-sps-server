@@ -34,6 +34,28 @@ db.exec(`
         created_at TEXT NOT NULL DEFAULT (datetime('now')),
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
+    
+    CREATE TABLE IF NOT EXISTS files (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        filename TEXT NOT NULL,
+        mimetype TEXT NOT NULL,
+        size INTEGER NOT NULL,
+        data BLOB NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 `);
+
+function ensureColumn(tableName: string, columnName: string, columnDefinition: string) {
+    const columns = db.prepare(`PRAGMA table_info(${tableName})`).all() as Array<{ name: string }>;
+    const exists = columns.some((column) => column.name === columnName);
+
+    if (!exists) {
+        db.exec(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDefinition}`);
+    }
+}
+
+ensureColumn("users", "profile_image_filename", "TEXT");
+ensureColumn("users", "profile_image_mimetype", "TEXT");
+ensureColumn("users", "profile_image_data", "BLOB");
 
 export default db;

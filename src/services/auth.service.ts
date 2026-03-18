@@ -19,6 +19,11 @@ const ALL_SCOPES = [
     "users:update",
     "users:delete",
     "users:list",
+    "file:upload",
+    "file:get",
+    "file:get:id",
+    "image:upload",
+    "image:get",
 ];
 
 export interface TokenPayload {

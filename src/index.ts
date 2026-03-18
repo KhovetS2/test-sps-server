@@ -12,6 +12,8 @@ import { seedDefaultAdmin } from "./database/seed";
 import { swaggerSpec } from "./swagger";
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
+import fileRoutes from "./routes/file.routes";
+
 
 const app = express();
 
@@ -24,6 +26,8 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Routes
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
+app.use("/files", fileRoutes);
+
 
 // Health check
 app.get("/", (_req, res) => {

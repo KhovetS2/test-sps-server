@@ -1,38 +1,46 @@
 import { Router } from "express";
+import multer from "multer";
 import {
     create,
     list,
     getById,
     update,
     remove,
+    uploadProfileImage,
+    getProfileImage,
 } from "../controllers/user.controller";
 import { authenticate, authorize } from "../middlewares/auth.middleware";
-import { validate } from "../middlewares/validate.middleware";
-import { createUserSchema, updateUserSchema } from "../schemas/user";
 
 const router = Router();
+router.use(authenticate)
 
-// All user routes require authentication
-router.use(authenticate);
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+        fileSize: 2 * 1024 * 1024,
+    },
+    fileFilter: (req, file, cb) => {
+        if (!file.mimetype.startsWith("image/")) {
+            return cb(new Error("Apenas imagens são permitidas"));
+        }
+
+        cb(null, true);
+    },
+});
+
+router.post("/", authorize(), create);
+router.get("/", authorize(), list);
+router.get("/:id", authorize(), getById);
+router.put("/:id", authorize(), update);
+router.delete("/:id", authorize(), remove);
 
 router.post(
-    "/",
-    authorize("users:create"),
-    validate(createUserSchema),
-    create
+    "/:id/profile-image",
+    authorize(),
+    upload.single("profile_image"),
+    uploadProfileImage
 );
 
-router.get("/", authorize("users:list"), list);
-
-router.get("/:id", authorize("users:read"), getById);
-
-router.put(
-    "/:id",
-    authorize("users:update"),
-    validate(updateUserSchema),
-    update
-);
-
-router.delete("/:id", authorize("users:delete"), remove);
+router.get("/:id/profile-image", authorize(), getProfileImage);
 
 export default router;
